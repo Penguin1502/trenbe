@@ -9,7 +9,24 @@ void main() {
 class MyApp extends StatelessWidget {
 
 
+  TextButton ButtonMaker(int nameSpecifier) {
+    return TextButton(
+
+      onPressed: () {
+      },
+      child: Text(
+        list[nameSpecifier],
+        style: TextStyle(
+            color: Colors.grey[700],
+            fontSize: 18,
+            fontFamily: 'Saira'),
+      ),
+    );
+  }
+
   int Count = 0;
+
+  List<String> list = ["홈", "기획전", "랭킹", "브랜드", "IT:EM", "매거진"];
 
   @override
   Widget build(BuildContext context) {
@@ -71,66 +88,12 @@ class MyApp extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      "홈",
-                      style: TextStyle(
-                          color: Colors.grey[700],
-                          fontSize: 18,
-                          fontFamily: 'Saira'),
-                    ),
-                  ),
-                  TextButton(
-                    child: Text(
-                      "기획전",
-                      style: TextStyle(
-                          color: Colors.grey[700],
-                          fontSize: 18,
-                          fontFamily: 'Saira'),
-                    ),
-                    onPressed: () {},
-                  ),
-                  TextButton(
-                    child: Text(
-                      "랭킹",
-                      style: TextStyle(
-                          color: Colors.grey[700],
-                          fontSize: 18,
-                          fontFamily: 'Saira'),
-                    ),
-                    onPressed: () {},
-                  ),
-                  TextButton(
-                    child: Text(
-                      "브랜드",
-                      style: TextStyle(
-                          color: Colors.grey[700],
-                          fontSize: 18,
-                          fontFamily: 'Saira'),
-                    ),
-                    onPressed: () {},
-                  ),
-                  TextButton(
-                    child: Text(
-                      "IT:EM",
-                      style: TextStyle(
-                          color: Colors.grey[700],
-                          fontSize: 18,
-                          fontFamily: 'Saira'),
-                    ),
-                    onPressed: () {},
-                  ),
-                  TextButton(
-                    child: Text(
-                      "매거진",
-                      style: TextStyle(
-                          color: Colors.grey[700],
-                          fontSize: 18,
-                          fontFamily: 'Saira'),
-                    ),
-                    onPressed: () {},
-                  ),
+                  ButtonMaker(0),
+                  ButtonMaker(1),
+                  ButtonMaker(2),
+                  ButtonMaker(3),
+                  ButtonMaker(4),
+                  ButtonMaker(5)
                 ],
               ),
               ImageSlider(),
