@@ -1,0 +1,56 @@
+[
+  {
+    "id": 12,
+    "image": "https://imgnew.outlookindia.com/public/uploads/articles/2019/2/16/lambo_1_20190216.jpg",
+    "likes": 42,
+    "date": "Apr 15",
+    "content": "Car Number 1",
+    "liked": false,
+    "user": "Chaemin Jung"
+  },
+  {
+    "id": 12,
+    "image": "https://www.cnet.com/a/img/resize/50a2b0406834f3b07d90495e3fac989d6bf51af3/hub/2016/04/28/5a91e8fc-14bc-4c22-abe4-b990073328d2/2016-tesla-model-s-19-of-43.jpg?auto=webp&width=768",
+    "likes": 69,
+    "date": "Apr 15",
+    "content": "Car Number 2",
+    "liked": false,
+    "user": "Chaemin Jung"
+  },
+  {
+    "id": 12,
+    "image": "https://api.ferrari.com/cms/network/medias//resize/6093c2a9ef0edd50a7434da2-ferrari-magazine-mJO8rwx_cS.jpg?apikey=9QscUiwr5n0NhOuQb463QEKghPrVlpaF",
+    "likes": 11,
+    "date": "Apr 15",
+    "content": "Car Number 3",
+    "liked": false,
+    "user": "Chaemin Jung"
+  },
+  {
+    "id": 12,
+    "image": "https://cdn.top-rider.com/news/photo/202002/28849_107399_1225.jpg",
+    "likes": 79,
+    "date": "Apr 15",
+    "content": "Car 4",
+    "liked": false,
+    "user": "Chaemin Jung"
+  },
+  {
+    "id": 12,
+    "image": "http://res.heraldm.com/content/image/2021/11/30/20211130000319_0.jpg",
+    "likes": 105,
+    "date": "Apr 15",
+    "content": "Car 5",
+    "liked": false,
+    "user": "Chaemin Jung"
+  },
+  {
+    "id": 12,
+    "image": "https://unkleared.files.wordpress.com/2020/09/2021-rolls-royce-ghost-details.jpg",
+    "likes": 20,
+    "date": "Apr 15",
+    "content": "Car 6",
+    "liked": false,
+    "user": "Chaemin Jung"
+  }
+]

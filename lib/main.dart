@@ -1,32 +1,95 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/services.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'CategoryMap.dart';
+import 'ImageSlider.dart';
+import 'ButtonMaker.dart';
 
 void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
 
+class MyApp extends StatefulWidget {
 
-  TextButton ButtonMaker(int nameSpecifier) {
-    return TextButton(
+  var data = [];
 
-      onPressed: () {
-      },
-      child: Text(
-        list[nameSpecifier],
-        style: TextStyle(
-            color: Colors.grey[700],
-            fontSize: 18,
-            fontFamily: 'Saira'),
-      ),
-    );
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+  int Counter=0;
+  List<Container> listOfObjects = [];
+  var _scrollController = ScrollController();
+
+  void upDateListOfObjects() { //data array holds 3 and is not reset to zero. so. yeah.
+     setState(() {
+      for (int i=0; i< widget.data.length; i++) {
+        listOfObjects.add(cardObject(Image.network(widget.data[i]['image'], fit: BoxFit.fitWidth),
+            Text("Likes: " + widget.data[i]['likes'].toString()), Text("User: " + widget.data[i]['user']), Text(widget.data[i]['content'], style: TextStyle(fontWeight: FontWeight.bold),)
+        ));
+      }
+      widget.data = [];//set to zero after ur done.
+    });
   }
 
-  int Count = 0;
+  @override
+  void initState() {
+    // TODO: implement initState
+  loadInitialData();
+  _scrollController.addListener(() {
+    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+      LoadMoreData();
+    }
+    print(_scrollController.position.pixels);
+  });
 
-  List<String> list = ["홈", "기획전", "랭킹", "브랜드", "IT:EM", "매거진"];
+    super.initState();
+    //init state does not support async.
+  }
+
+  loadInitialData() async {
+    await getData(); //waits until ALL the data has been loaded before allowing next method to run
+    //Need this so that the for loop in upDateListOfObjects doesnt run on an empty data array.
+    upDateListOfObjects(); //needs to be within async method to be respected
+
+  }
+
+  LoadMoreData() async {
+
+    await addNewData(Counter);
+
+        setState(() {
+          upDateListOfObjects();
+          Counter++;
+      });
+
+  }
+
+  getData() async {
+    var result = await http.get(Uri.parse("https://codingapple1.github.io/app/data.json")); //wait before decoding
+    var result2 = jsonDecode(result.body); //Status code  = Get request
+    setState(() {
+      for (int i=0; i<3; i++) {
+        widget.data.add(result2[i]);
+      }
+
+    });
+  }
+
+  addNewData(int ContentCount) async { //Counter marks location of pseudo JSON file server. (for this project its just a page called BACKEND)
+
+    //define and use function on the spot is possible. Only usable within this loop tho. And once.
+    final String response = await rootBundle.loadString('Backend/somebackend.json');
+    final data = await json.decode(response);
+    setState(() {
+      widget.data.add(data[ContentCount]);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +133,7 @@ class MyApp extends StatelessWidget {
         ),
         body: SafeArea(
           child: ListView(
+            controller: _scrollController,
             children: [
               Container(
                 padding: EdgeInsets.all(20),
@@ -80,24 +144,29 @@ class MyApp extends StatelessWidget {
                       fillColor: Colors.grey.shade100,
                       hintText: '트랜비X삼성전자 최대 20% 쿠폰!',
                       contentPadding: EdgeInsets.only(left: 20, top: 15),
+                      suffixIcon: IconButton(icon: Icon(Icons.search), onPressed: () {}),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(40),
                       ),
                     )),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ButtonMaker(0),
-                  ButtonMaker(1),
-                  ButtonMaker(2),
-                  ButtonMaker(3),
-                  ButtonMaker(4),
-                  ButtonMaker(5)
-                ],
+              FittedBox(
+                child: Row(
+                  children: [
+                    ButtonMaker(0),
+                    ButtonMaker(1),
+                    ButtonMaker(2),
+                    ButtonMaker(3),
+                    ButtonMaker(4),
+                    ButtonMaker(5)
+                  ],
+                ),
               ),
               ImageSlider(),
-              CategoryMap()
+              CategoryMap(),
+              Column(
+                  children: listOfObjects,
+              )
             ],
           ),
         ),
@@ -114,160 +183,27 @@ class MyApp extends StatelessWidget {
         ),
         floatingActionButton: FloatingActionButton(
           elevation: 0,
-          onPressed: () {},
+          onPressed: () async {
+            await addNewData(Counter);
+            upDateListOfObjects();
+            Counter++;
+          },
           child: Icon(Icons.arrow_upward, color: Colors.grey[700]),
           backgroundColor: Colors.white,
         ),
       ),
     );
   }
+
+
 }
 
-class ImageSlider extends StatefulWidget {
-  const ImageSlider({Key? key}) : super(key: key);
-
-  @override
-  State<ImageSlider> createState() => _ImageSliderState();
+Container cardObject(Image s, Text k, Text f, Text y) {
+  return Container(
+    child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [s, k, f, y]),
+  );
 }
 
-class _ImageSliderState extends State<ImageSlider> {
-  final List<String> imageList = [
-    'images/slider1.png',
-    'images/slider2.png',
-    'images/slider3.png',
-    'images/slider4.png',
-  ];
 
-  @override
-  Widget build(BuildContext context) {
-    return CarouselSlider(
-      options: CarouselOptions(height: 200, autoPlay: true),
-      items: [0,1,2,3].map((i) { //this works lets get it.
-        return Builder(
-          builder: (BuildContext context) {
-            return Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-              ),
-              width: MediaQuery.of(context).size.width,
-              margin: EdgeInsets.symmetric(horizontal: 10.0),
-              child: Image.asset(imageList[i]),
-            );
-          },
-        );
-      }).toList(),
-    );
-  }
-}
-
-class CategoryMap extends StatelessWidget {
-  const CategoryMap({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Image.asset('images/women.png', height: 50),
-                    Text("여성")
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Image.asset('images/men.png', height: 50),
-                    Text("남성")
-                  ],
-                ),
-              ),
-              Expanded(
-                child: SizedBox.square(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Image.asset('images/kids.png', height: 50),
-                      Text("키즈")
-                    ],
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Image.asset('images/Resale.png', height: 50),
-                    Text("리세일")
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Image.asset('images/outlet.png', height: 50),
-                    Text("아울렛")
-                  ],
-                ),
-              )
-          ],),
-          Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Image.asset('images/highEnd.png', height: 50),
-                        Text("하이엔드")
-                      ],
-                ),
-                  ),
-                Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Image.asset('images/ContentLuxury.png', height: 50),
-                    Text("컨템럭셔리")
-                  ],
-                ),
-                ),
-                Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Image.asset('images/Sneakers.png', height: 50),
-                    Text("스니커즈")
-                  ],
-                ),
-                ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Image.asset('images/HomeBling.png', height: 50),
-                      Text("홈리빙")
-                    ],
-                  ),
-                ),
-                Expanded(child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Image.asset('images/Referb.png', height: 50),
-                    Text("리퍼브")
-                  ],
-                )),
-          ]),
-        ],
-      )
-    );
-  }
-}
